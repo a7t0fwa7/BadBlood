@@ -247,11 +247,15 @@
     if($accountType -le 3){ # X percent chance of being a service account
     #service
     $nameSuffix = "SA"
-    $description = 'Created with secframe.com/badblood.'
+    #$description = 'Created with secframe.com/badblood.'
+    $description = 'Service account'
     #removing do while loop and making random number range longer, sorry if the account is there already
     # this is so that I can attempt to import multithreading on user creation
     
-        $name = ""+ (Get-Random -Minimum 100 -Maximum 9999999999) + "$nameSuffix"
+        #$name = ""+ (Get-Random -Minimum 100 -Maximum 9999999999) + "$nameSuffix"
+	$displayname = $name
+        $givenname = ""
+        $surname = ""  
         
         
     }else{
@@ -259,14 +263,15 @@
         # Write-Host $surname
     $genderpreference = 0,1|get-random
     if ($genderpreference -eq 0){$givenname = get-content("$($scriptpath)\Names\femalenames-usa-top1000.txt")|get-random}else{$givenname = get-content($scriptpath + '\Names\malenames-usa-top1000.txt')|get-random}
-    $name = $givenname+"_"+$surname
+    $name = $givenname.SubString(0,1) + "." + $surname
+    $displayname = $givenname + " " + $surname
     }
     
         $departmentnumber = [convert]::ToInt32('9999999') 
         
         
     #Need to figure out how to do the L attribute
-    $description = 'Created with secframe.com/badblood.'
+    $description = 'Password Length'
     $pwd = New-SWRandomPassword -MinPasswordLength 22 -MaxPasswordLength 25
     #======================================================================
     # 
@@ -290,7 +295,7 @@
         return $true
     }
 
-    new-aduser -server $setdc  -Description $Description -DisplayName $name -name $name -SamAccountName $name -Surname $name -Enabled $true -Path $ouLocation -AccountPassword (ConvertTo-SecureString ($pwd) -AsPlainText -force)
+    new-aduser -server $setdc  -Description $Description -DisplayName $displayname -name $name -SamAccountName $givenname -Surname $surname -Enabled $true -Path $ouLocation -AccountPassword (ConvertTo-SecureString ($pwd) -AsPlainText -force)
     
     
     
